@@ -1,0 +1,122 @@
+name: binaries
+on:
+  workflow_dispatch:
+
+env:
+  ALPINE_BRANCH: v3.18
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  JOBS: 3
+  LINUX_LDFLAGS: -static
+jobs:
+  php-multi-linux:
+    name: php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PHP_VERSION:
+          - 7.4.33
+        ARCH:
+          - x86_64
+          #- aarch64
+    steps:
+      - name: Download php
+        run: wget https://www.php.net/distributions/php-${{ matrix.PHP_VERSION }}.tar.gz
+
+      - name: Extract php
+        run: tar xvzf ${{ matrix.PHP_VERSION }}.tar.gz
+
+      - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
+        uses: common-binaries/setup-alpine@v1
+        with:
+          arch: ${{ matrix.ARCH }}
+          branch: ${{ env.ALPINE_BRANCH }}
+          packages: >
+            build-base
+            linux-headers
+
+      - name: Build php
+        env:
+          LDFLAGS: ${{ env.LINUX_LDFLAGS }}
+        run: |
+          mkdir artifact
+          pwd
+          cd php-${{ matrix.PHP_VERSION }}
+          pwd
+          make
+          ls -l
+          mkdir bin
+          mv src/php-server bin/
+          BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
+          tar cvzf $BIN_NAME conf/ bin/
+          mv $BIN_NAME ../artifact/$BIN_NAME
+        shell: alpine.sh {0}
+
+      - name: Upload php binary to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifact/*
+
+  upload:
+    name: Upload binaries
+    needs:
+      - php-multi-linux
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    container:
+      image: docker://alpine:3.18
+    steps:
+      - name: Install dependencies
+        run: apk add -U git
+
+      - name: Checkout binaries branch
+        uses: actions/checkout@v3
+        with:
+          ref: binaries
+          path: binaries
+
+      - name: Delete binaries branch
+        working-directory: binaries
+        run: |
+          git checkout --orphan binaries_nouse
+          git branch -d binaries
+          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git --delete binaries
+          rm -fr *
+
+      - name: Create binaries branch
+        working-directory: binaries
+        run: |
+          git checkout --orphan binaries
+
+      - name: Download and unpack all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: List unpacked artifact files
+        run: ls -lah artifact/
+
+      - name: Move all binaries to the repository
+        run: mv -v artifact/* binaries/
+
+      - name: Check if there are any changes
+        id: has_changes
+        working-directory: binaries
+        run: |
+          git status || exit 1
+          test -n "$(git status --porcelain)" && result=yes || result=no
+          echo "result=$result" >> $GITHUB_OUTPUT
+
+      - name: Commit changes
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: binaries
+        run: |
+          git config --local user.email "github-actions@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add --all
+          git commit -m "Built from ${{ github.sha }}"
+
+      - name: Push changes back to origin
+        if: steps.has_changes.outputs.result == 'yes'
+        working-directory: binaries
+        run: |
+          # XXX: workaround for https://github.com/orgs/community/discussions/55820
+          git config --global http.version HTTP/1.1
+          git push https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git binaries
