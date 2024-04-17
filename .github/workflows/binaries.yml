@@ -44,7 +44,7 @@ jobs:
           pwd
           cd php-${{ matrix.PHP_VERSION }}
           pwd
-          ./configure
+          ./configure --enable-static
           make
           mkdir bin
           mv sapi/cli/php bin/
