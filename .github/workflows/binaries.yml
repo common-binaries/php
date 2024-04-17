@@ -51,11 +51,20 @@ jobs:
           sed -ie 's/-o $(SAPI_FPM_PATH)/-all-static -o $(SAPI_FPM_PATH)/g' "Makefile"
           make -j12
           mkdir bin
-          mv sapi/cli/php bin/
+          mkdir conf
+          mkdir www
+          mv sapi/cli/php bin/          
           mv sapi/cgi/php-cgi bin/
           mv sapi/fpm/php-fpm bin/
+          mv php.ini-production conf/php.ini
+          mv sapi/fpm/php-fpm.conf.in conf/php-fpm.conf
+          mv sapi/fpm/www.conf.in conf/www.conf
+          mv sapi/fpm/init.d.php-fpm.in conf/init.d.php-fpm
+          mv sapi/fpm/php-fpm.service.in conf/php-fpm.service
+          mv sapi/fpm/php-fpm.8.in conf/php-fpm.8
+          mv sapi/fpm/status.html.in www/status.html
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
-          tar cvzf $BIN_NAME bin/
+          tar cvzf $BIN_NAME bin/ conf/ www/
           mv $BIN_NAME ../artifact/$BIN_NAME
         shell: alpine.sh {0}
 
@@ -78,6 +87,7 @@ jobs:
 
       - name: Extract php
         run: |
+          cp php.ini-production php.ini
           mkdir bin
           mv *.zip bin/
           cd bin/
@@ -123,6 +133,7 @@ jobs:
 
       - name: Extract php
         run: |
+          cp php.ini-production php.ini
           mkdir bin
           mv *.zip bin/
           cd bin/
