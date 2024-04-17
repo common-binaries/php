@@ -35,6 +35,7 @@ jobs:
             linux-headers
             libxml2-dev
             sqlite-dev
+            oniguruma-dev
 
       - name: Build php
         run: |
