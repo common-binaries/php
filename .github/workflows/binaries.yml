@@ -37,15 +37,16 @@ jobs:
             sqlite-dev
 
       - name: Build php
-        env:
-          LDFLAGS: ${{ env.LINUX_LDFLAGS }}
         run: |
           mkdir artifact
           pwd
           cd php-${{ matrix.PHP_VERSION }}
           pwd
-          ./configure --enable-static
-          make
+          ./configure LDFLAGS=-static --disable-all --enable-cli --enable-mbstring --enable-static=yes
+          sed -ie 's/-export-dynamic//g' "Makefile"
+          sed -ie 's/-o $(SAPI_CLI_PATH)/-all-static -o $(SAPI_CLI_PATH)/g' "Makefile"
+          sed -ie 's/-o $(SAPI_FPM_PATH)/-all-static -o $(SAPI_FPM_PATH)/g' "Makefile"
+          make LDFLAGS="-ldl" -j12
           mkdir bin
           mv sapi/cli/php bin/
           mv sapi/cgi/php-cgi bin/
