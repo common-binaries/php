@@ -33,7 +33,7 @@ jobs:
           packages: >
             build-base
             linux-headers
-            libxml-dev
+            libxml2-dev
 
       - name: Build php
         env:
