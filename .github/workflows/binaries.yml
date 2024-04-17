@@ -34,6 +34,7 @@ jobs:
             build-base
             linux-headers
             libxml2-dev
+            sqlite-dev
 
       - name: Build php
         env:
