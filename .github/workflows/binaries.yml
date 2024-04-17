@@ -77,7 +77,13 @@ jobs:
         run: wget https://windows.php.net/downloads/releases/php-${{ matrix.PHP_VERSION }}-Win32-vc15-x64.zip
 
       - name: Extract php
-        run: unzip php-${{ matrix.PHP_VERSION }}-Win32-vc15-x64.zip
+        run: |
+          mkdir bin
+          mv *.zip bin/
+          cd bin/
+          unzip *.zip
+          rm *.zip
+          cd ..
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
         uses: common-binaries/setup-alpine@v1
@@ -91,8 +97,6 @@ jobs:
       - name: Package php
         run: |
           mkdir artifact
-          pwd
-          mv php-${{ matrix.PHP_VERSION }} bin
           pwd
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}.tar.gz"
           tar cvzf $BIN_NAME bin/
@@ -118,7 +122,13 @@ jobs:
         run: wget https://windows.php.net/downloads/releases/php-${{ matrix.PHP_VERSION }}-Win32-vs16-x64.zip
 
       - name: Extract php
-        run: unzip php-${{ matrix.PHP_VERSION }}-Win32-vs16-x64.zip
+        run: |
+          mkdir bin
+          mv *.zip bin/
+          cd bin/
+          unzip *.zip
+          rm *.zip
+          cd ..
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
         uses: common-binaries/setup-alpine@v1
@@ -132,8 +142,6 @@ jobs:
       - name: Package php
         run: |
           mkdir artifact
-          pwd
-          mv php-${{ matrix.PHP_VERSION }} bin
           pwd
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}.tar.gz"
           tar cvzf $BIN_NAME bin/
