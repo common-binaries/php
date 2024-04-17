@@ -42,6 +42,7 @@ jobs:
           pwd
           cd php-${{ matrix.PHP_VERSION }}
           pwd
+          ./configure
           make
           ls -l
           mkdir bin
