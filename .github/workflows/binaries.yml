@@ -34,6 +34,7 @@ jobs:
           packages: >
             build-base
             linux-headers
+            gnu-libiconv-dev
             libxml2-dev
             sqlite-dev
             oniguruma-dev
