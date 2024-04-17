@@ -47,9 +47,7 @@ jobs:
           ./configure
           make
           ls -l
-          ls -l libs
-          ls -l modules
-          ls -l pear
+          find / -name php
           mkdir bin
           mv libs/php bin/
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
