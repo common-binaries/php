@@ -43,7 +43,7 @@ jobs:
           pwd
           cd php-${{ matrix.PHP_VERSION }}
           pwd
-          ./configure LDFLAGS=-static --disable-all --enable-cli --enable-mbstring --enable-static=yes
+          ./configure LDFLAGS=-static --disable-all --enable-cli --enable-static=yes --with-mysqli --enable-shared=no --enable-fpm
           sed -ie 's/-export-dynamic//g' "Makefile"
           sed -ie 's/-o $(SAPI_CLI_PATH)/-all-static -o $(SAPI_CLI_PATH)/g' "Makefile"
           sed -ie 's/-o $(SAPI_FPM_PATH)/-all-static -o $(SAPI_FPM_PATH)/g' "Makefile"
@@ -51,6 +51,7 @@ jobs:
           mkdir bin
           mv sapi/cli/php bin/
           mv sapi/cgi/php-cgi bin/
+          mv sapi/fpm/php-fpm bin/
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
           tar cvzf $BIN_NAME bin/
           mv $BIN_NAME ../artifact/$BIN_NAME
