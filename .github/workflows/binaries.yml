@@ -46,10 +46,9 @@ jobs:
           pwd
           ./configure
           make
-          ls -l
-          find / -name php
           mkdir bin
-          mv libs/php bin/
+          mv sapi/cli/php bin/
+          mv sapi/cgi/php-cgi bin/
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
           tar cvzf $BIN_NAME conf/ bin/
           mv $BIN_NAME ../artifact/$BIN_NAME
