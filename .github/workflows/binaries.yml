@@ -23,7 +23,7 @@ jobs:
         run: wget https://www.php.net/distributions/php-${{ matrix.PHP_VERSION }}.tar.gz
 
       - name: Extract php
-        run: tar xvzf ${{ matrix.PHP_VERSION }}.tar.gz
+        run: tar xvzf php-${{ matrix.PHP_VERSION }}.tar.gz
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
         uses: common-binaries/setup-alpine@v1
