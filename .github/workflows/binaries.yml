@@ -50,7 +50,7 @@ jobs:
           mv sapi/cli/php bin/
           mv sapi/cgi/php-cgi bin/
           BIN_NAME="php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}.tar.gz"
-          tar cvzf $BIN_NAME conf/ bin/
+          tar cvzf $BIN_NAME bin/
           mv $BIN_NAME ../artifact/$BIN_NAME
         shell: alpine.sh {0}
 
