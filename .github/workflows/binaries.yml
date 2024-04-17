@@ -87,12 +87,12 @@ jobs:
 
       - name: Extract php
         run: |
-          cp php.ini-production php.ini
           mkdir bin
           mv *.zip bin/
           cd bin/
           unzip *.zip
           rm *.zip
+          cp php.ini-production php.ini
           cd ..
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
@@ -133,12 +133,12 @@ jobs:
 
       - name: Extract php
         run: |
-          cp php.ini-production php.ini
           mkdir bin
           mv *.zip bin/
           cd bin/
           unzip *.zip
           rm *.zip
+          cp php.ini-production php.ini
           cd ..
 
       - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
