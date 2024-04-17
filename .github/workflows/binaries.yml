@@ -64,7 +64,7 @@ jobs:
         with:
           path: artifact/*
   php-74-win32:
-    name: php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}
+    name: php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -109,7 +109,7 @@ jobs:
           path: artifact/*
 
   php-83-win32:
-    name: php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}
+    name: php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
