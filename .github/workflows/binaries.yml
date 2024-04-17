@@ -63,6 +63,87 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: artifact/*
+  php-74-win32:
+    name: php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PHP_VERSION:
+          - 7.4.33
+        ARCH:
+          - x86_64
+    steps:
+      - name: Download php windows binaries
+        run: wget https://windows.php.net/downloads/releases/php-${{ matrix.PHP_VERSION }}-Win32-vc15-x64.zip
+
+      - name: Extract php
+        run: unzip php-${{ matrix.PHP_VERSION }}-Win32-vc15-x64.zip
+
+      - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
+        uses: common-binaries/setup-alpine@v1
+        with:
+          arch: ${{ matrix.ARCH }}
+          branch: ${{ env.ALPINE_BRANCH }}
+          packages: >
+            build-base
+            linux-headers
+
+      - name: Package php
+        run: |
+          mkdir artifact
+          pwd
+          mv php-${{ matrix.PHP_VERSION }} bin
+          pwd
+          BIN_NAME="php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}.tar.gz"
+          tar cvzf $BIN_NAME bin/
+          mv $BIN_NAME ./artifact/$BIN_NAME
+        shell: alpine.sh {0}
+
+      - name: Upload php binary to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifact/*
+
+  php-83-win32:
+    name: php-${{ matrix.PHP_VERSION }}-linux-${{ matrix.ARCH }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PHP_VERSION:
+          - 8.3.6
+        ARCH:
+          - x86_64
+    steps:
+      - name: Download php windows binaries
+        run: wget https://windows.php.net/downloads/releases/php-${{ matrix.PHP_VERSION }}-Win32-vs16-x64.zip
+
+      - name: Extract php
+        run: unzip php-${{ matrix.PHP_VERSION }}-Win32-vs16-x64.zip
+
+      - name: Install Alpine ${{ env.ALPINE_BRANCH }} for ${{ matrix.ARCH }}
+        uses: common-binaries/setup-alpine@v1
+        with:
+          arch: ${{ matrix.ARCH }}
+          branch: ${{ env.ALPINE_BRANCH }}
+          packages: >
+            build-base
+            linux-headers
+
+      - name: Package php
+        run: |
+          mkdir artifact
+          pwd
+          mv php-${{ matrix.PHP_VERSION }} bin
+          pwd
+          BIN_NAME="php-${{ matrix.PHP_VERSION }}-win32-${{ matrix.ARCH }}.tar.gz"
+          tar cvzf $BIN_NAME bin/
+          mv $BIN_NAME ./artifact/$BIN_NAME
+        shell: alpine.sh {0}
+
+      - name: Upload php binary to artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: artifact/*
 
   upload:
     name: Upload binaries
