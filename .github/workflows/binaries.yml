@@ -34,6 +34,7 @@ jobs:
           packages: >
             build-base
             linux-headers
+            openssl-dev
             libxml2-dev
             sqlite-dev
             oniguruma-dev
@@ -44,7 +45,7 @@ jobs:
           pwd
           cd php-${{ matrix.PHP_VERSION }}
           pwd
-          ./configure 'LDFLAGS=-static' '--enable-static=yes' '--enable-shared=no' '--with-pdo-odbc=unixODBC' '--with-mysqli' '--with-zlib' '--with-curl' '--without-pear' '--disable-phar' '--with-openssl' '--enable-fpm' '--enable-mbstring' '--enable-xml' '--enable-session' '--enable-ftp' '--enable-pdo' '--enable-tokenizer'
+          ./configure LDFLAGS=-static --disable-all --enable-cli --enable-fpm --enable-pdo=static --enable-json=static --enable-static=yes --enable-shared=no
           sed -ie 's/-export-dynamic//g' "Makefile"
           sed -ie 's/-o $(SAPI_CLI_PATH)/-all-static -o $(SAPI_CLI_PATH)/g' "Makefile"
           sed -ie 's/-o $(SAPI_CGI_PATH)/-all-static -o $(SAPI_CGI_PATH)/g' "Makefile"
